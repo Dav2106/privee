@@ -1,0 +1,17 @@
+<nav class="navbar-bar" aria-label="Navegación principal">
+  <a class="brand" href="/" aria-label="Privée, inicio">PRIVÉE</a>
+  <app-search-bar (searchChange)="searchChange.emit($event)"></app-search-bar>
+  <div class="nav-links">
+    @for (item of menuItems; track item.label) {
+      <button
+        class="nav-link"
+        type="button"
+        [class.active]="selectedType === item.type"
+        [attr.aria-pressed]="selectedType === item.type"
+        (click)="typeChange.emit(item.type)">
+        {{ item.label }}
+      </button>
+    }
+  </div>
+  <a class="admin-link" routerLink="/admin">Mantenimiento</a>
+</nav>

@@ -1,0 +1,146 @@
+<main class="admin-page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">PRIVÉE · ADMINISTRACIÓN</p>
+      <h1>Mantenimiento de productos</h1>
+      <p class="subtitle">Administra los productos que aparecen en el catálogo.</p>
+    </div>
+    <button class="sign-out" type="button" (click)="logout()">Cerrar sesión</button>
+  </header>
+
+  @if (errorMessage) {
+    <p class="notice error" role="alert">{{ errorMessage }}</p>
+  }
+  @if (successMessage) {
+    <p class="notice success" role="status">{{ successMessage }}</p>
+  }
+  @if (invalidDocuments.length > 0) {
+    <section class="notice warning" role="alert" aria-labelledby="invalid-documents-title">
+      <h2 id="invalid-documents-title">Hay documentos que no cumplen el formato del catálogo</h2>
+      <p>
+        Estos registros se omiten del catálogo. Corrígelos en Firestore o elimínalos desde aquí.
+      </p>
+      <ul>
+        @for (document of invalidDocuments; track document.documentId) {
+          <li>
+            <code>{{ document.documentId }}</code> — {{ document.invalidFields.join(', ') }}
+            <button class="delete-button" type="button" (click)="deleteInvalidDocument(document)">
+              Eliminar documento inválido
+            </button>
+          </li>
+        }
+      </ul>
+    </section>
+  }
+
+  <section class="editor" aria-labelledby="editor-title">
+    <div class="section-heading">
+      <h2 id="editor-title">{{ editingProduct ? 'Editar producto' : 'Agregar producto' }}</h2>
+      @if (editingProduct) {
+        <button class="text-button" type="button" (click)="cancelEdit()">Cancelar edición</button>
+      }
+    </div>
+
+    <form class="product-form" (ngSubmit)="saveProduct()">
+      <label>
+        Nombre
+        <input name="name" [(ngModel)]="draft.name" maxlength="120" required />
+      </label>
+      <label>
+        Marca
+        <input name="company" [(ngModel)]="draft.company" maxlength="100" required />
+      </label>
+      <label class="wide">
+        URL de imagen
+        <input name="imageSrc" type="url" [(ngModel)]="draft.imageSrc" maxlength="2048" required />
+      </label>
+      <label>
+        Precio (₡)
+        <input
+          name="price"
+          type="number"
+          [(ngModel)]="draft.price"
+          min="0"
+          max="999999999"
+          step="1"
+          required
+        />
+      </label>
+      <label>
+        Tipo
+        <select name="type" [(ngModel)]="draft.type" required>
+          <option value="arabe">Árabe</option>
+          <option value="diseñador">Diseñador</option>
+          <option value="nicho">Nicho</option>
+        </select>
+      </label>
+      <label class="wide">
+        Descripción
+        <textarea
+          name="description"
+          [(ngModel)]="draft.description"
+          maxlength="500"
+          rows="3"
+          required
+        ></textarea>
+      </label>
+      <div class="form-actions wide">
+        @if (savePendingWarning) {
+          <p class="save-pending-warning" role="status">
+            Firestore aún no confirma el guardado. Revisa la conexión y no vuelvas a enviar el
+            formulario para evitar duplicados.
+          </p>
+        }
+        <button class="primary-button" type="submit" [disabled]="saving">
+          {{ saving ? 'Guardando...' : editingProduct ? 'Guardar cambios' : 'Agregar producto' }}
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <section class="product-list" aria-labelledby="products-title">
+    <div class="section-heading">
+      <h2 id="products-title">Productos</h2>
+      <span class="product-count">{{ products.length }} en total</span>
+    </div>
+
+    @if (loading) {
+      <p class="empty-message" role="status">Cargando productos...</p>
+    } @else if (products.length === 0) {
+      <p class="empty-message">Aún no hay productos. Usa el formulario para agregar el primero.</p>
+    } @else {
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Marca</th>
+              <th>Tipo</th>
+              <th>Precio</th>
+              <th class="actions-heading">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (product of products; track product.documentId) {
+              <tr>
+                <td class="product-cell">
+                  <img [src]="product.imageSrc" [alt]="product.name" loading="lazy" />
+                  <span>{{ product.name }}</span>
+                </td>
+                <td>{{ product.company }}</td>
+                <td>{{ product.type }}</td>
+                <td>₡{{ product.price }}</td>
+                <td class="actions">
+                  <button type="button" (click)="beginEdit(product)">Editar</button>
+                  <button class="delete-button" type="button" (click)="deleteProduct(product)">
+                    Eliminar
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+</main>

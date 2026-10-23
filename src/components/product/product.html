@@ -1,0 +1,92 @@
+<main class="catalog">
+  <p class="breadcrumb"><a href="/">Inicio</a><span aria-hidden="true">›</span> Perfumes</p>
+
+  <div class="catalog-layout">
+    <aside class="filters" aria-label="Filtros de productos">
+      <h2>Marca</h2>
+      <div class="brand-list">
+        @for (brand of visibleBrands; track brand.name) {
+          <label class="brand-filter">
+            <input
+              type="checkbox"
+              [checked]="isBrandSelected(brand.name)"
+              (change)="toggleBrand(brand.name, $event)"
+            />
+            <span class="brand-name">{{ brand.name }}</span>
+            <span class="brand-count">{{ brand.count }}</span>
+          </label>
+        }
+      </div>
+      @if (brands.length > 12) {
+        <button class="show-brands" type="button" (click)="showAllBrands = !showAllBrands">
+          {{ showAllBrands ? 'Mostrar menos' : 'Mostrar todas (' + brands.length + ')' }}
+        </button>
+      }
+    </aside>
+
+    <section class="catalog-results" aria-label="Catálogo de perfumes">
+      <div class="catalog-toolbar">
+        <div class="sort-tabs" role="group" aria-label="Tipo de orden">
+          <button
+            type="button"
+            [class.active]="sortMode === 'best-selling'"
+            [attr.aria-pressed]="sortMode === 'best-selling'"
+            (click)="setSortMode('best-selling')"
+          >
+            Más vendidos
+          </button>
+          <button
+            type="button"
+            [class.active]="sortMode === 'newest'"
+            [attr.aria-pressed]="sortMode === 'newest'"
+            (click)="setSortMode('newest')"
+          >
+            Nuevos ingresos
+          </button>
+        </div>
+
+        <label class="sort-select">
+          <span>Ordenar por</span>
+          <select [value]="priceSort" (change)="onPriceSortChange($event)">
+            <option value="default">Más vendidos</option>
+            <option value="price-asc">Precio: menor a mayor</option>
+            <option value="price-desc">Precio: mayor a menor</option>
+          </select>
+        </label>
+      </div>
+
+      @if (loading) {
+        <p class="catalog-message" role="status">Cargando productos...</p>
+      } @else if (loadError) {
+        <p class="catalog-message error" role="alert">
+          No se pudieron cargar los productos. Intenta recargar la página.
+        </p>
+      } @else {
+        @if (invalidDocumentCount > 0) {
+          <p class="catalog-message error" role="alert">
+            {{ invalidDocumentCount }} producto(s) tienen información incompleta y no se muestran.
+            El administrador puede corregirlos desde mantenimiento.
+          </p>
+        }
+        <p class="result-count" aria-live="polite">{{ filteredProducts.length }} productos</p>
+
+        <ul class="product-grid">
+          @for (item of filteredProducts; track item.id) {
+            <li>
+              <app-card
+                [title]="item.name"
+                [subtitle]="item.company"
+                [imageSrc]="item.imageSrc"
+                [description]="item.description"
+                [price]="item.price"
+              >
+              </app-card>
+            </li>
+          } @empty {
+            <li class="empty-state">No hay productos que coincidan con los filtros.</li>
+          }
+        </ul>
+      }
+    </section>
+  </div>
+</main>

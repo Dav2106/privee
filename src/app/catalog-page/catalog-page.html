@@ -1,0 +1,9 @@
+<app-navbar
+  [selectedType]="selectedProductType"
+  (searchChange)="onSearchChange($event)"
+  (typeChange)="onTypeChange($event)">
+</app-navbar>
+<app-product
+  [searchTerm]="searchTerm"
+  [productType]="selectedProductType">
+</app-product>

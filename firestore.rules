@@ -1,0 +1,93 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: privee
+    // Document ID: Firestore-generated string ID
+    // Fields:
+    //   - id: integer, required, 0..9007199254740991
+    //   - name: string, required, 1..120 characters
+    //   - company: string, required, 1..100 characters
+    //   - imageSrc: HTTP(S) URL string, required, <=2048 characters
+    //   - description: string, required, 1..500 characters
+    //   - price: number, required, 0..999999999
+    //   - type: string, required, one of arabe/diseñador/nicho
+    // Public catalog users can read product documents. Only the verified
+    // administrator can create, update, or delete them.
+    //
+    // ===============================================================
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated()
+        && request.auth.token.email == 'vargasd2106@gmail.com'
+        && request.auth.token.email_verified == true;
+    }
+
+    function hasRequiredProductFields(data) {
+      return data.keys().hasAll([
+        'id',
+        'name',
+        'company',
+        'imageSrc',
+        'description',
+        'price',
+        'type'
+      ]);
+    }
+
+    function hasOnlyProductFields(data) {
+      return data.keys().hasOnly([
+        'id',
+        'name',
+        'company',
+        'imageSrc',
+        'description',
+        'price',
+        'type'
+      ]);
+    }
+
+    function isValidProduct(data) {
+      return hasRequiredProductFields(data)
+        && hasOnlyProductFields(data)
+        && data.id is int
+        && data.id >= 0
+        && data.id <= 9007199254740991
+        && data.name is string
+        && data.name.size() >= 1
+        && data.name.size() <= 120
+        && data.company is string
+        && data.company.size() >= 1
+        && data.company.size() <= 100
+        && data.imageSrc is string
+        && data.imageSrc.size() <= 2048
+        && data.imageSrc.matches('^https?://.+$')
+        && data.description is string
+        && data.description.size() >= 1
+        && data.description.size() <= 500
+        && data.price is number
+        && data.price >= 0
+        && data.price <= 999999999
+        && data.type is string
+        && data.type in ['arabe', 'diseñador', 'nicho'];
+    }
+
+    match /privee/{productId} {
+      allow read: if true;
+      allow create, update: if isAdmin() && isValidProduct(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

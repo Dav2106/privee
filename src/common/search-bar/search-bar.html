@@ -1,0 +1,9 @@
+<form class="search" role="search" (submit)="$event.preventDefault()">
+    <input type="search" name="q" placeholder="Buscar" aria-label="Buscar productos" (input)="onSearch($event)">
+    <button type="button" aria-label="Buscar">
+      <svg aria-hidden="true" viewBox="0 0 24 24">
+        <circle cx="10.8" cy="10.8" r="6.8"/>
+        <path d="m16 16 5 5"/>
+      </svg>
+    </button>
+</form>
