@@ -18,6 +18,8 @@ export class Navbar {
   @Input() menuItems: Array<{label: string, type: ProductType}> = [
     {label: "Árabes", type: "arabe"},
     {label: "Diseñador", type: "diseñador"},
-    {label: "Nicho", type: "nicho"}
+    {label: "Body Splash", type: "splash"},
+    {label: "Niños", type: "niños"},
+    {label: "Cremas", type: "cremas"}
   ];
 }

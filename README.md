@@ -72,8 +72,9 @@ these fields:
 | `price`       | number         | `20000`                             |
 | `type`        | string         | `"arabe"`                           |
 
-Use `arabe`, `diseñador`, or `nicho` for `type`. The app expects all fields and
-their types as listed above. It listens to the collection in real time. Documents
+Use `arabe`, `diseñador`, `splash`, `niños`, or `cremas` for `type`. The app
+expects all fields and their types as listed above. It listens to the collection
+in real time. Documents
 that do not match this schema are excluded without interrupting the other
 products; the maintenance page identifies their document IDs and allows the
 administrator to delete them.

@@ -168,6 +168,7 @@ export class AdminMaintenance {
       window.clearTimeout(pendingWarningTimer);
       this.savePendingWarning = false;
       this.saving = false;
+      this.changeDetector.markForCheck();
     }
   }
 

@@ -15,7 +15,7 @@ service cloud.firestore {
     //   - imageSrc: HTTP(S) URL string, required, <=2048 characters
     //   - description: string, required, 1..500 characters
     //   - price: number, required, 0..999999999
-    //   - type: string, required, one of arabe/diseñador/nicho
+    //   - type: string, required, one of arabe/diseñador/splash/niños/cremas
     // Public catalog users can read product documents. Only the verified
     // administrator can create, update, or delete them.
     //
@@ -77,7 +77,7 @@ service cloud.firestore {
         && data.price >= 0
         && data.price <= 999999999
         && data.type is string
-        && data.type in ['arabe', 'diseñador', 'nicho'];
+        && data.type in ['arabe', 'diseñador', 'splash', 'niños', 'cremas'];
     }
 
     match /privee/{productId} {

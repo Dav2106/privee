@@ -9,7 +9,7 @@ import {
   updateDoc,
 } from '@angular/fire/firestore';
 import { Observable, map } from 'rxjs';
-import ProductDTO from '../models/product';
+import ProductDTO, { isProductType } from '../models/product';
 
 type FirestoreProduct = Record<string, unknown>;
 const PRODUCTS_COLLECTION = 'privee';
@@ -115,7 +115,7 @@ export class CatalogoService {
     if (typeof price !== 'number' || !Number.isFinite(price) || price < 0 || price > 999999999) {
       invalidFields.push('price (debe ser un número entre 0 y 999999999)');
     }
-    if (type !== 'arabe' && type !== 'diseñador' && type !== 'nicho') invalidFields.push('type');
+    if (!isProductType(type)) invalidFields.push('type');
     if (Object.keys(extraFields).length > 0)
       invalidFields.push(`campos adicionales: ${Object.keys(extraFields).join(', ')}`);
 
